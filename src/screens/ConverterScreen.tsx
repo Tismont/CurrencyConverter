@@ -8,14 +8,14 @@ import {
   ScrollView,
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const CURRENCY_OPTIONS = [
   { label: 'USD', value: 'USD' },
   { label: 'EUR', value: 'EUR' },
   { label: 'CZK', value: 'CZK' },
-]
-
+];
+const x = 0;
 const MOCK_RATES: Record<string, Record<string, number>> = {
   USD: { USD: 1, EUR: 0.92, CZK: 23.5 },
   EUR: { USD: 1.09, EUR: 1, CZK: 25.6 },
@@ -40,7 +40,10 @@ export default function ConverterScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
         <Text style={styles.title}>Purple currency converter</Text>
 
         {/* Input card */}
@@ -55,36 +58,34 @@ export default function ConverterScreen() {
             onChangeText={setAmount}
           />
 
-       <Text style={styles.label}>From</Text>
+          <Text style={styles.label}>From</Text>
 
- <Dropdown
-  style={styles.dropdown}
-  containerStyle={styles.dropdownContainer}
-  data={CURRENCY_OPTIONS}
-  labelField="label"
-  valueField="value"
-  value={fromCurrency}
-  onChange={item => setFromCurrency(item.value)}
-/>
+          <Dropdown
+            style={styles.dropdown}
+            containerStyle={styles.dropdownContainer}
+            data={CURRENCY_OPTIONS}
+            labelField="label"
+            valueField="value"
+            value={fromCurrency}
+            onChange={(item) => setFromCurrency(item.value)}
+          />
 
-  <Text style={styles.label}>To</Text>
+          <Text style={styles.label}>To</Text>
 
-      <Dropdown
-  style={styles.dropdown}
-  containerStyle={styles.dropdownContainer}
-  data={CURRENCY_OPTIONS}
-  labelField="label"
-  valueField="value"
-  value={toCurrency}
-  onChange={item => setToCurrency(item.value)}
-/>
-
-      
+          <Dropdown
+            style={styles.dropdown}
+            containerStyle={styles.dropdownContainer}
+            data={CURRENCY_OPTIONS}
+            labelField="label"
+            valueField="value"
+            value={toCurrency}
+            onChange={(item) => setToCurrency(item.value)}
+          />
         </View>
 
-            <TouchableOpacity style={styles.convertButton} onPress={handleConvert}>
-            <Text style={styles.convertButtonText}>Convert currency</Text>
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.convertButton} onPress={handleConvert}>
+          <Text style={styles.convertButtonText}>Convert currency</Text>
+        </TouchableOpacity>
 
         {/* Result card */}
         {result !== null && (
@@ -95,7 +96,7 @@ export default function ConverterScreen() {
             </Text>
             <View style={styles.divider} />
             <Text style={styles.calculationText}>
-    Number of calculations made:{' '}
+              Number of calculations made:{' '}
               <Text style={styles.calculationCount}>{calculationCount}</Text>
             </Text>
           </View>
@@ -114,11 +115,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-container: {
-  padding: 24,
-  paddingBottom: 40,
-  flexGrow: 1,
-},
+  container: {
+    padding: 24,
+    paddingBottom: 40,
+    flexGrow: 1,
+  },
   title: {
     fontSize: 26,
     fontWeight: '400',
@@ -160,23 +161,23 @@ container: {
   },
 
   select: {
-  backgroundColor: '#FFFFFF',
-  borderRadius: 10,
-  marginBottom: 20,
-  overflow: 'hidden',
-},
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    marginBottom: 20,
+    overflow: 'hidden',
+  },
 
-dropdown: {
-  backgroundColor: '#FFFFFF',
-  borderRadius: 10,
-  paddingHorizontal: 16,
-  height: 50,
-  marginBottom: 20,
-},
+  dropdown: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    height: 50,
+    marginBottom: 20,
+  },
 
-dropdownContainer: {
-  borderRadius: 10,
-},
+  dropdownContainer: {
+    borderRadius: 10,
+  },
 
   pickerRow: {
     flexDirection: 'row',
@@ -204,20 +205,20 @@ dropdownContainer: {
     color: PURPLE,
   },
 
-convertButton: {
-  backgroundColor: PURPLE,
-  borderRadius: 6,
-  paddingVertical: 14,
-  alignItems: 'center',
-  marginTop: 20,
-  marginHorizontal: 60,
-},
+  convertButton: {
+    backgroundColor: PURPLE,
+    borderRadius: 6,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 20,
+    marginHorizontal: 60,
+  },
 
-convertButtonText: {
-  color: '#FFFFFF',
-  fontSize: 16,
-  fontWeight: '600',
-},
+  convertButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 
   resultCard: {
     backgroundColor: '#FFFFFF',
