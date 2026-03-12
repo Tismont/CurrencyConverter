@@ -2,19 +2,20 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchRates, fetchCurrencies } from '../services/exchangeApi';
 import {
   getTotalConversions,
   saveConversion,
 } from '../services/conversionsService';
+import { COLORS } from '../theme/colors';
+import Button from '../components/Button';
+import Input from '../components/Input';
+import Select from '../components/Select';
 
 type CurrencyOption = { label: string; value: string };
 
@@ -93,11 +94,9 @@ export default function ConverterScreen() {
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.title}>Purple currency converter</Text>
-
         {loading && (
           <View style={styles.statusContainer}>
-            <ActivityIndicator size="large" color={PURPLE} />
+            <ActivityIndicator size="large" color={COLORS.purple} />
             <Text style={styles.statusText}>Loading currencies…</Text>
           </View>
         )}
@@ -111,52 +110,32 @@ export default function ConverterScreen() {
         {!loading && !error && (
           <View style={styles.card}>
             <Text style={styles.label}>Amount to convert</Text>
-            <TextInput
-              style={styles.input}
+            <Input
               placeholder="Enter amount"
-              placeholderTextColor="#c9aaff"
-              keyboardType="numeric"
               value={amount}
               onChangeText={setAmount}
             />
 
             <Text style={styles.label}>From</Text>
 
-            <Dropdown
-              style={styles.dropdown}
-              containerStyle={styles.dropdownContainer}
+            <Select
               data={currencyOptions}
-              labelField="label"
-              valueField="value"
               value={fromCurrency}
               onChange={(item) => setFromCurrency(item.value)}
-              search
-              searchPlaceholder="Search currency…"
             />
 
             <Text style={styles.label}>To</Text>
 
-            <Dropdown
-              style={styles.dropdown}
-              containerStyle={styles.dropdownContainer}
+            <Select
               data={currencyOptions}
-              labelField="label"
-              valueField="value"
               value={toCurrency}
               onChange={(item) => setToCurrency(item.value)}
-              search
-              searchPlaceholder="Search currency…"
             />
           </View>
         )}
 
         {!loading && !error && (
-          <TouchableOpacity
-            style={styles.convertButton}
-            onPress={handleConvert}
-          >
-            <Text style={styles.convertButtonText}>Convert currency</Text>
-          </TouchableOpacity>
+          <Button label="Convert currency" onPress={handleConvert} />
         )}
 
         {result !== null && (
@@ -177,126 +156,46 @@ export default function ConverterScreen() {
   );
 }
 
-const PURPLE = '#4C276F';
-const PURPLE_LIGHT = '#9333EA';
-const PURPLE_PALE = '#F3E8FF';
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.white,
   },
   container: {
-    paddingTop: 12,
-    paddingHorizontal: 24,
+    padding: 24,
     paddingBottom: 40,
     flexGrow: 1,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: '400',
-    color: 'black',
-    textAlign: 'center',
-    marginBottom: 28,
-    marginTop: 12,
-  },
-
   card: {
-    backgroundColor: PURPLE,
+    backgroundColor: COLORS.purple,
     borderRadius: 10,
     padding: 20,
-    shadowColor: PURPLE,
+    shadowColor: COLORS.purple,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
     elevation: 8,
   },
   label: {
-    color: '#E9D5FF',
-    fontSize: 13,
-    fontWeight: '600',
+    color: COLORS.white,
+    fontSize: 15,
+    fontWeight: '500',
     marginBottom: 8,
     marginTop: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
-  input: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    color: '#FFFFFF',
-    fontSize: 18,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.25)',
-  },
-
   select: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.white,
     borderRadius: 10,
     marginBottom: 20,
     overflow: 'hidden',
   },
-
-  dropdown: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    height: 50,
-    marginBottom: 20,
-  },
-
-  dropdownContainer: {
-    borderRadius: 10,
-  },
-
-  pickerRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 20,
-  },
-  currencyButton: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.4)',
-    alignItems: 'center',
-  },
-  currencyButtonActive: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#FFFFFF',
-  },
-  currencyButtonText: {
-    color: '#E9D5FF',
-    fontWeight: '600',
-    fontSize: 15,
-  },
-  currencyButtonTextActive: {
-    color: PURPLE,
-  },
-
-  convertButton: {
-    backgroundColor: PURPLE,
-    borderRadius: 6,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 20,
-    marginHorizontal: 60,
-  },
-
-  convertButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-
   resultCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.white,
     borderRadius: 20,
     padding: 24,
-    marginTop: 20,
+    marginTop: 24,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.08,
@@ -306,29 +205,29 @@ const styles = StyleSheet.create({
   resultLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#9CA3AF',
+    color: COLORS.grey,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: 6,
   },
   resultValue: {
-    fontSize: 36,
-    fontWeight: '800',
-    color: PURPLE,
+    fontSize: 32,
+    fontWeight: '600',
+    color: COLORS.purple,
     marginBottom: 16,
   },
   divider: {
     height: 1,
-    backgroundColor: PURPLE_PALE,
+    backgroundColor: COLORS.purplePale,
     marginBottom: 14,
   },
   calculationText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: COLORS.greyLight,
   },
   calculationCount: {
     fontWeight: '700',
-    color: PURPLE_LIGHT,
+    color: COLORS.purpleLight,
   },
 
   statusContainer: {
@@ -338,16 +237,16 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 15,
-    color: PURPLE,
+    color: COLORS.purple,
   },
   errorContainer: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: COLORS.errorBg,
     borderRadius: 10,
     padding: 16,
     marginTop: 20,
   },
   errorText: {
-    color: '#B91C1C',
+    color: COLORS.error,
     fontSize: 14,
     textAlign: 'center',
   },

@@ -15,7 +15,7 @@ export default function App() {
           name="Converter"
           component={ConverterScreen}
           options={({ navigation }) => ({
-            title: 'Currency Converter',
+            title: 'Purple Currency Converter',
             headerRight: () => (
               <TouchableOpacity onPress={() => navigation.navigate('Stats')}>
                 <Text
