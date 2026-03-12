@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { TouchableOpacity, Text } from 'react-native';
 import ConverterScreen from './src/screens/ConverterScreen';
 import StatsScreen from './src/screens/StatsScreen';
+import { BarChart } from 'lucide-react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,15 +19,11 @@ export default function App() {
             title: 'Purple Currency Converter',
             headerRight: () => (
               <TouchableOpacity onPress={() => navigation.navigate('Stats')}>
-                <Text
-                  style={{
-                    marginRight: 12,
-                    color: '#4C276F',
-                    fontWeight: '600',
-                  }}
-                >
-                  Stats
-                </Text>
+                <BarChart
+                  size={22}
+                  color="#4C276F"
+                  style={{ marginRight: 12 }}
+                />
               </TouchableOpacity>
             ),
           })}

@@ -2,6 +2,7 @@ export const COLORS = {
   purple: '#4C276F',
   purpleLight: '#9333EA',
   purplePale: '#F3E8FF',
+  purpleDisabled: '#C4B5FD',
 
   white: '#FFFFFF',
   black: '#000000',

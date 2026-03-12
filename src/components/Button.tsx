@@ -11,9 +11,17 @@ type ButtonProps = TouchableOpacityProps & {
   label: string;
 };
 
-export default function Button({ label, style, ...rest }: ButtonProps) {
+export default function Button({
+  label,
+  style,
+  disabled,
+  ...rest
+}: ButtonProps) {
   return (
-    <TouchableOpacity style={[styles.button, style]} {...rest}>
+    <TouchableOpacity
+      style={[styles.button, disabled && styles.buttonDisabled, style]}
+      {...rest}
+    >
       <Text style={styles.label}>{label}</Text>
     </TouchableOpacity>
   );
@@ -27,6 +35,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 32,
     marginHorizontal: 60,
+  },
+  buttonDisabled: {
+    backgroundColor: COLORS.purpleDisabled,
   },
   label: {
     color: COLORS.white,

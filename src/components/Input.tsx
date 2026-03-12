@@ -8,7 +8,6 @@ export default function Input({ style, ...rest }: InputProps) {
   return (
     <TextInput
       placeholderTextColor={COLORS.greyLight}
-      keyboardType="numeric"
       style={[styles.input, style]}
       {...rest}
     />

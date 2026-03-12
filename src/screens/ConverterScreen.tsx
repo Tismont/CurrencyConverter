@@ -122,6 +122,7 @@ export default function ConverterScreen() {
               placeholder="Enter amount"
               value={amount}
               onChangeText={setAmount}
+              keyboardType="numeric"
             />
 
             <Text style={styles.label}>From</Text>
