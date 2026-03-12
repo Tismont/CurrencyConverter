@@ -11,10 +11,12 @@ import {
 import { Dropdown } from 'react-native-element-dropdown';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchRates, fetchCurrencies } from '../services/exchangeApi';
+import { useNavigation } from '@react-navigation/native';
 
 type CurrencyOption = { label: string; value: string };
 
 export default function ConverterScreen() {
+  const navigation = useNavigation();
   const [amount, setAmount] = useState<string>('');
   const [fromCurrency, setFromCurrency] = useState<string>('USD');
   const [toCurrency, setToCurrency] = useState<string>('EUR');
