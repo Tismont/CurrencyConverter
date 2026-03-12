@@ -18,6 +18,7 @@ export default function Select({
       labelField="label"
       valueField="value"
       search
+      autoScroll={false}
       searchPlaceholder="Search currency…"
       style={[styles.dropdown, style]}
       containerStyle={[styles.dropdownContainer, containerStyle]}
