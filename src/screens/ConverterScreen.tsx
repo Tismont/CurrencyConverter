@@ -11,17 +11,19 @@ import {
 import { Dropdown } from 'react-native-element-dropdown';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchRates, fetchCurrencies } from '../services/exchangeApi';
-import { useNavigation } from '@react-navigation/native';
+import {
+  getTotalConversions,
+  saveConversion,
+} from '../services/conversionsService';
 
 type CurrencyOption = { label: string; value: string };
 
 export default function ConverterScreen() {
-  const navigation = useNavigation();
   const [amount, setAmount] = useState<string>('');
   const [fromCurrency, setFromCurrency] = useState<string>('USD');
   const [toCurrency, setToCurrency] = useState<string>('EUR');
   const [result, setResult] = useState<number | null>(null);
-  const [calculationCount, setCalculationCount] = useState<number>(0);
+  const [totalConversions, setTotalConversions] = useState<number>(0);
 
   const [rates, setRates] = useState<Record<string, number>>({});
   const [currencyOptions, setCurrencyOptions] = useState<CurrencyOption[]>([]);
@@ -33,15 +35,21 @@ export default function ConverterScreen() {
       try {
         setLoading(true);
         setError(null);
-        const [ratesData, currenciesData] = await Promise.all([
+
+        const [ratesData, currenciesData, total] = await Promise.all([
           fetchRates(),
           fetchCurrencies(),
+          getTotalConversions(),
         ]);
+
         setRates(ratesData);
+        setTotalConversions(total);
+
         const options = Object.entries(currenciesData).map(([code, name]) => ({
           label: `${code} – ${name}`,
           value: code,
         }));
+
         setCurrencyOptions(options);
       } catch (e) {
         setError('Failed to load exchange rates. Please try again.');
@@ -53,7 +61,7 @@ export default function ConverterScreen() {
     loadData();
   }, []);
 
-  const handleConvert = () => {
+  const handleConvert = async () => {
     const parsed = parseFloat(amount);
     if (isNaN(parsed) || parsed <= 0) return;
 
@@ -63,12 +71,24 @@ export default function ConverterScreen() {
     if (!rateFrom || !rateTo) return;
 
     const converted = parsed * (rateTo / rateFrom);
+    const usdValue = parsed / rateFrom;
+
     setResult(Number(converted.toFixed(4)));
-    setCalculationCount((prev) => prev + 1);
+
+    await saveConversion({
+      amount: parsed,
+      source_currency: fromCurrency,
+      target_currency: toCurrency,
+      result: converted,
+      usd_value: usdValue,
+    });
+
+    const total = await getTotalConversions();
+    setTotalConversions(total);
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
       <ScrollView
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
@@ -148,7 +168,7 @@ export default function ConverterScreen() {
             <View style={styles.divider} />
             <Text style={styles.calculationText}>
               Number of calculations made:{' '}
-              <Text style={styles.calculationCount}>{calculationCount}</Text>
+              <Text style={styles.calculationCount}>{totalConversions}</Text>
             </Text>
           </View>
         )}
@@ -167,7 +187,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   container: {
-    padding: 24,
+    paddingTop: 12,
+    paddingHorizontal: 24,
     paddingBottom: 40,
     flexGrow: 1,
   },
