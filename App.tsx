@@ -5,6 +5,7 @@ import { TouchableOpacity, Text } from 'react-native';
 import ConverterScreen from './src/screens/ConverterScreen';
 import StatsScreen from './src/screens/StatsScreen';
 import { BarChart } from 'lucide-react-native';
+import { COLORS } from './src/theme/colors';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +22,7 @@ export default function App() {
               <TouchableOpacity onPress={() => navigation.navigate('Stats')}>
                 <BarChart
                   size={22}
-                  color="#4C276F"
+                  color={COLORS.purple}
                   style={{ marginRight: 12 }}
                 />
               </TouchableOpacity>

@@ -18,6 +18,11 @@ import Button from '../components/Button';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import { ArrowUpDown } from 'lucide-react-native';
+import {
+  convertCurrency,
+  isValidAmount,
+  mapCurrenciesToOptions,
+} from '../helpers/currency';
 
 type CurrencyOption = { label: string; value: string };
 
@@ -48,10 +53,7 @@ export default function ConverterScreen() {
         setRates(ratesData);
         setTotalConversions(total);
 
-        const options = Object.entries(currenciesData).map(([code, name]) => ({
-          label: `${code} – ${name}`,
-          value: code,
-        }));
+        const options = mapCurrenciesToOptions(currenciesData);
 
         setCurrencyOptions(options);
       } catch (e) {
@@ -65,16 +67,15 @@ export default function ConverterScreen() {
   }, []);
 
   const handleConvert = async () => {
+    if (!isValidAmount(amount)) return;
     const parsed = parseFloat(amount);
-    if (isNaN(parsed) || parsed <= 0) return;
 
     const rateFrom = rates[fromCurrency];
     const rateTo = rates[toCurrency];
 
     if (!rateFrom || !rateTo) return;
 
-    const converted = parsed * (rateTo / rateFrom);
-    const usdValue = parsed / rateFrom;
+    const { converted, usdValue } = convertCurrency(parsed, rateFrom, rateTo);
 
     setResult(Number(converted.toFixed(4)));
 
@@ -155,7 +156,7 @@ export default function ConverterScreen() {
           <Button
             label="Convert currency"
             onPress={handleConvert}
-            disabled={isNaN(parseFloat(amount)) || parseFloat(amount) <= 0}
+            disabled={!isValidAmount(amount)}
           />
         )}
 
