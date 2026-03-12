@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchRates, fetchCurrencies } from '../services/exchangeApi';
@@ -16,6 +17,7 @@ import { COLORS } from '../theme/colors';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import Select from '../components/Select';
+import { ArrowUpDown } from 'lucide-react-native';
 
 type CurrencyOption = { label: string; value: string };
 
@@ -88,6 +90,12 @@ export default function ConverterScreen() {
     setTotalConversions(total);
   };
 
+  const swapCurrencies = () => {
+    setFromCurrency(toCurrency);
+    setToCurrency(fromCurrency);
+    setResult(null);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
       <ScrollView
@@ -124,6 +132,14 @@ export default function ConverterScreen() {
               onChange={(item) => setFromCurrency(item.value)}
             />
 
+            <TouchableOpacity
+              style={styles.swapButton}
+              onPress={swapCurrencies}
+              accessibilityLabel="Swap currencies"
+            >
+              <ArrowUpDown size={18} color={COLORS.white} />
+            </TouchableOpacity>
+
             <Text style={styles.label}>To</Text>
 
             <Select
@@ -135,7 +151,11 @@ export default function ConverterScreen() {
         )}
 
         {!loading && !error && (
-          <Button label="Convert currency" onPress={handleConvert} />
+          <Button
+            label="Convert currency"
+            onPress={handleConvert}
+            disabled={isNaN(parseFloat(amount)) || parseFloat(amount) <= 0}
+          />
         )}
 
         {result !== null && (
@@ -178,10 +198,9 @@ const styles = StyleSheet.create({
   },
   label: {
     color: COLORS.white,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '500',
     marginBottom: 8,
-    marginTop: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
@@ -190,6 +209,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
     overflow: 'hidden',
+  },
+  swapButton: {
+    alignSelf: 'center',
+    borderRadius: 20,
+    padding: 8,
   },
   resultCard: {
     backgroundColor: COLORS.white,
