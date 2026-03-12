@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,21 +6,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { fetchRates, fetchCurrencies } from '../services/exchangeApi';
 
-const CURRENCY_OPTIONS = [
-  { label: 'USD', value: 'USD' },
-  { label: 'EUR', value: 'EUR' },
-  { label: 'CZK', value: 'CZK' },
-];
-const x = 0;
-const MOCK_RATES: Record<string, Record<string, number>> = {
-  USD: { USD: 1, EUR: 0.92, CZK: 23.5 },
-  EUR: { USD: 1.09, EUR: 1, CZK: 25.6 },
-  CZK: { USD: 0.043, EUR: 0.039, CZK: 1 },
-};
+type CurrencyOption = { label: string; value: string };
 
 export default function ConverterScreen() {
   const [amount, setAmount] = useState<string>('');
@@ -29,12 +21,47 @@ export default function ConverterScreen() {
   const [result, setResult] = useState<number | null>(null);
   const [calculationCount, setCalculationCount] = useState<number>(0);
 
+  const [rates, setRates] = useState<Record<string, number>>({});
+  const [currencyOptions, setCurrencyOptions] = useState<CurrencyOption[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const [ratesData, currenciesData] = await Promise.all([
+          fetchRates(),
+          fetchCurrencies(),
+        ]);
+        setRates(ratesData);
+        const options = Object.entries(currenciesData).map(([code, name]) => ({
+          label: `${code} – ${name}`,
+          value: code,
+        }));
+        setCurrencyOptions(options);
+      } catch (e) {
+        setError('Failed to load exchange rates. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
   const handleConvert = () => {
     const parsed = parseFloat(amount);
     if (isNaN(parsed) || parsed <= 0) return;
 
-    const rate = MOCK_RATES[fromCurrency]?.[toCurrency] ?? 1;
-    setResult(parseFloat((parsed * rate).toFixed(2)));
+    const rateFrom = rates[fromCurrency];
+    const rateTo = rates[toCurrency];
+
+    if (!rateFrom || !rateTo) return;
+
+    const converted = parsed * (rateTo / rateFrom);
+    setResult(Number(converted.toFixed(4)));
     setCalculationCount((prev) => prev + 1);
   };
 
@@ -46,48 +73,70 @@ export default function ConverterScreen() {
       >
         <Text style={styles.title}>Purple currency converter</Text>
 
-        {/* Input card */}
-        <View style={styles.card}>
-          <Text style={styles.label}>Amount to convert</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter amount"
-            placeholderTextColor="#c9aaff"
-            keyboardType="numeric"
-            value={amount}
-            onChangeText={setAmount}
-          />
+        {loading && (
+          <View style={styles.statusContainer}>
+            <ActivityIndicator size="large" color={PURPLE} />
+            <Text style={styles.statusText}>Loading currencies…</Text>
+          </View>
+        )}
 
-          <Text style={styles.label}>From</Text>
+        {!loading && error && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        )}
 
-          <Dropdown
-            style={styles.dropdown}
-            containerStyle={styles.dropdownContainer}
-            data={CURRENCY_OPTIONS}
-            labelField="label"
-            valueField="value"
-            value={fromCurrency}
-            onChange={(item) => setFromCurrency(item.value)}
-          />
+        {!loading && !error && (
+          <View style={styles.card}>
+            <Text style={styles.label}>Amount to convert</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter amount"
+              placeholderTextColor="#c9aaff"
+              keyboardType="numeric"
+              value={amount}
+              onChangeText={setAmount}
+            />
 
-          <Text style={styles.label}>To</Text>
+            <Text style={styles.label}>From</Text>
 
-          <Dropdown
-            style={styles.dropdown}
-            containerStyle={styles.dropdownContainer}
-            data={CURRENCY_OPTIONS}
-            labelField="label"
-            valueField="value"
-            value={toCurrency}
-            onChange={(item) => setToCurrency(item.value)}
-          />
-        </View>
+            <Dropdown
+              style={styles.dropdown}
+              containerStyle={styles.dropdownContainer}
+              data={currencyOptions}
+              labelField="label"
+              valueField="value"
+              value={fromCurrency}
+              onChange={(item) => setFromCurrency(item.value)}
+              search
+              searchPlaceholder="Search currency…"
+            />
 
-        <TouchableOpacity style={styles.convertButton} onPress={handleConvert}>
-          <Text style={styles.convertButtonText}>Convert currency</Text>
-        </TouchableOpacity>
+            <Text style={styles.label}>To</Text>
 
-        {/* Result card */}
+            <Dropdown
+              style={styles.dropdown}
+              containerStyle={styles.dropdownContainer}
+              data={currencyOptions}
+              labelField="label"
+              valueField="value"
+              value={toCurrency}
+              onChange={(item) => setToCurrency(item.value)}
+              search
+              searchPlaceholder="Search currency…"
+            />
+          </View>
+        )}
+
+        {!loading && !error && (
+          <TouchableOpacity
+            style={styles.convertButton}
+            onPress={handleConvert}
+          >
+            <Text style={styles.convertButtonText}>Convert currency</Text>
+          </TouchableOpacity>
+        )}
+
         {result !== null && (
           <View style={styles.resultCard}>
             <Text style={styles.resultLabel}>Result</Text>
@@ -257,5 +306,26 @@ const styles = StyleSheet.create({
   calculationCount: {
     fontWeight: '700',
     color: PURPLE_LIGHT,
+  },
+
+  statusContainer: {
+    alignItems: 'center',
+    marginTop: 60,
+    gap: 16,
+  },
+  statusText: {
+    fontSize: 15,
+    color: PURPLE,
+  },
+  errorContainer: {
+    backgroundColor: '#FEE2E2',
+    borderRadius: 10,
+    padding: 16,
+    marginTop: 20,
+  },
+  errorText: {
+    color: '#B91C1C',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });
