@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import ConverterScreen from './src/screens/ConverterScreen';
 import StatsScreen from './src/screens/StatsScreen';
 import { BarChart } from 'lucide-react-native';

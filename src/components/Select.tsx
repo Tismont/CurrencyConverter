@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { DropdownProps } from 'react-native-element-dropdown/lib/typescript/components/Dropdown/model';
 import { COLORS } from '../theme/colors';
